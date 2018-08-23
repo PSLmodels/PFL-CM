@@ -462,6 +462,9 @@ replace employed=0 if a_wkstat>=6
 gen weeklywage=wsal_val/wkswork if employed==1
 replace weeklywage=. if weeklywage<=0
 
+// Calculate hours worked
+gen totalhours = wkswork * hrswk
+
 // Merge in policy parameters
 gen mergeid = 1
 merge m:1 mergeid using parameters
@@ -482,6 +485,9 @@ replace otherreason_expdur = otherreason_expdur * include_otherreason
 replace newchild_expdur = newchild_expdur * include_newchild
 
 gen leave_expdur = ownhealth_expdur + childhealth_expdur + spousehealth_expdur + parenthealth_expdur + otherrelhealth_expdur + military_expdur + otherreason_expdur + newchild_expdur
+
+// Exclude those who do not meet the required hours worked
+replace leave_expdur = 0 if totalhours < work_requirement
 
 // Calculate benefit
 gen leave_expweeks = leave_expdur / 5

@@ -6,6 +6,7 @@ replace maxduration_days = 40
 replace replacementrate = 0.7
 replace maxbenefit = 600
 replace waiting_period = 0
+replace work_requirement = 0
 replace include_ownhealth = 1
 replace include_childhealth = 1
 replace include_spousehealth = 1
