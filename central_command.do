@@ -1,10 +1,19 @@
-cd "N:\Kallen\Gitis PFL model"
+cd "[POINT TO DIRECTORY HERE]"
 
 /* Define parameters */
 use parameters, clear
 replace maxduration_days = 40
 replace replacementrate = 0.7
 replace maxbenefit = 600
+replace waiting_period = 0
+replace include_ownhealth = 1
+replace include_childhealth = 1
+replace include_spousehealth = 1
+replace include_parenthealth = 1
+replace include_otherrelhealth = 1
+replace include_military = 1
+replace include_otherreason = 1
+replace include_newchild = 1
 save parameters, replace
 
 /* Determine which assumptions to use */

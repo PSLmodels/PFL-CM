@@ -57,8 +57,11 @@ replace durationhigh=durationlow*2 if A3==1
 // Limit duration based on maximum leave available
 // durationhigh: duration of paid leave for those taking it immediately
 // durationhigh2: duration for those going onto the program after 4 weeks
-gen durationhigh2 = durationhigh
+replace durationhigh = 0 if durationhigh<waiting_period & !missing(durationhigh)
+replace durationhigh = durationhigh - waiting_period if durationhigh>=waiting_period & !missing(durationhigh)
 replace durationhigh = maxduration_days if durationhigh>maxduration_days & !missing(durationhigh)
+
+gen durationhigh2 = durationhigh
 replace durationhigh2 = maxduration_days + 20 if durationhigh2>maxduration_days+20 & !missing(durationhigh2)
 
 
@@ -440,7 +443,6 @@ gen otherrelhealth_expdur = otherrelhealth_expdur_unpaid + otherrelhealth_expdur
 gen military_expdur = military_expdur_unpaid + military_expdur_paid + military_expdur_over
 gen otherreason_expdur = otherreason_expdur_unpaid + otherreason_expdur_paid + otherreason_expdur_over
 gen newchild_expdur = newchild_expdur_unpaid + newchild_expdur_paid + newchild_expdur_over
-gen leave_expdur = ownhealth_expdur + childhealth_expdur + spousehealth_expdur + parenthealth_expdur + otherrelhealth_expdur + military_expdur + otherreason_expdur + newchild_expdur
 
 save fmla_results, replace
 
@@ -468,6 +470,18 @@ drop _merge
 // Merge in results of FMLA analysis
 merge m:1 mergeid using fmla_results
 drop mergeid _merge
+
+// Calculate expected total leave taken
+replace ownhealth_expdur = ownhealth_expdur * include_ownhealth
+replace childhealth_expdur = childhealth_expdur * include_childhealth
+replace spousehealth_expdur = spousehealth_expdur * include_spousehealth
+replace parenthealth_expdur = parenthealth_expdur * include_parenthealth
+replace otherrelhealth_expdur = otherrelhealth_expdur * include_otherrelhealth
+replace military_expdur = military_expdur * include_military
+replace otherreason_expdur = otherreason_expdur * include_otherreason
+replace newchild_expdur = newchild_expdur * include_newchild
+
+gen leave_expdur = ownhealth_expdur + childhealth_expdur + spousehealth_expdur + parenthealth_expdur + otherrelhealth_expdur + military_expdur + otherreason_expdur + newchild_expdur
 
 // Calculate benefit
 gen leave_expweeks = leave_expdur / 5
