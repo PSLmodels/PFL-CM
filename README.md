@@ -15,4 +15,4 @@ This model is currently under development. The model components and the results 
 [Documentation of program take-up assumptions](https://github.com/open-source-economics/PFLCM/blob/master/documentation/takeup_assumptions.md)
 
 ## Citing PFLCM
-PFLCM (Version 0.0.0)[Source code], https://github.com/open-source-economics/PFLCM.
+PFLCM (Version 0.1.0)[Source code], https://github.com/open-source-economics/PFLCM.
