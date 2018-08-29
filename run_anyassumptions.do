@@ -118,7 +118,7 @@ replace paid=0 if A45==2
 gen fourweekshigh=1 if durationhigh<=20
 replace fourweekshigh=0 if durationhigh>20 & durationhigh<=242
 
-save fmla2, replace
+save "intermediate_files/fmla2.dta", replace
 
 
 *************************
@@ -127,270 +127,270 @@ save fmla2, replace
 
 /* Save take-up shares */
 // Condition: eligible and took leave
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse ownhealth1 childhealth1 spousehealth1 parenthealth1 otherrelhealth1 military1 otherreason1 newchild1 if FMLAleavetaker==1 & FMLAelig==1 [aweight=weight]
 gen mergeid = 1
-save takeupshares, replace
+save "intermediate_files/takeupshares.dta", replace
 
 /* Save fraction paid */
 // Condition: eligible & took given type of leave
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse paid if ownhealth1==1 & FMLAelig==1 [aweight=weight]
 rename paid ownhealth_fracpaid
 gen mergeid = 1
-save ownhealth_fracpaid, replace
+save "intermediate_files/ownhealth_fracpaid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse paid if childhealth1==1 & FMLAelig==1 [aweight=weight]
 rename paid childhealth_fracpaid
 gen mergeid = 1
-save childhealth_fracpaid, replace
+save "intermediate_files/childhealth_fracpaid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse paid if spousehealth1==1 & FMLAelig==1 [aweight=weight]
 rename paid spousehealth_fracpaid
 gen mergeid = 1
-save spousehealth_fracpaid, replace
+save "intermediate_files/spousehealth_fracpaid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse paid if parenthealth1==1 & FMLAelig==1 [aweight=weight]
 rename paid parenthealth_fracpaid
 gen mergeid = 1
-save parenthealth_fracpaid, replace
+save "intermediate_files/parenthealth_fracpaid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse paid if otherrelhealth1==1 & FMLAelig==1 [aweight=weight]
 rename paid otherrelhealth_fracpaid
 gen mergeid = 1
-save otherrelhealth_fracpaid, replace
+save "intermediate_files/otherrelhealth_fracpaid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse paid if military1==1 & FMLAelig==1 [aweight=weight]
 rename paid military_fracpaid
 gen mergeid = 1
-save military_fracpaid, replace
+save "intermediate_files/military_fracpaid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse paid if otherreason1==1 & FMLAelig==1 [aweight=weight]
 rename paid otherreason_fracpaid
 gen mergeid = 1
-save otherreason_fracpaid, replace
+save "intermediate_files/otherreason_fracpaid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse paid if newchild1==1 & FMLAelig==1 [aweight=weight]
 rename paid newchild_fracpaid
 gen mergeid = 1
-save newchild_fracpaid, replace
+save "intermediate_files/newchild_fracpaid.dta", replace
 
-use ownhealth_fracpaid, clear
-merge 1:1 mergeid using childhealth_fracpaid, nogen
-merge 1:1 mergeid using spousehealth_fracpaid, nogen
-merge 1:1 mergeid using parenthealth_fracpaid, nogen
-merge 1:1 mergeid using otherrelhealth_fracpaid, nogen
-merge 1:1 mergeid using military_fracpaid, nogen
-merge 1:1 mergeid using otherreason_fracpaid, nogen
-merge 1:1 mergeid using newchild_fracpaid, nogen
-save fracpaid, replace
+use "intermediate_files/ownhealth_fracpaid.dta", clear
+merge 1:1 mergeid using "intermediate_files/childhealth_fracpaid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/spousehealth_fracpaid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/parenthealth_fracpaid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/otherrelhealth_fracpaid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/military_fracpaid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/otherreason_fracpaid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/newchild_fracpaid.dta", nogen
+save "intermediate_files/fracpaid.dta", replace
 
 /* Save fraction under 4 weeks and duration for those paid */
 // Condition: eligible & took given type of leave & paid by employer
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse fourweekshigh durationhigh if ownhealth1==1 & FMLAelig==1 & paid==1 [aweight=weight]
 rename fourweekshigh ownhealth_fracunder4
 rename durationhigh ownhealth_dayspaid
 gen mergeid = 1
-save ownhealth_fracunder4_paid, replace
+save "intermediate_files/ownhealth_fracunder4_paid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse fourweekshigh durationhigh if childhealth1==1 & FMLAelig==1 & paid==1 [aweight=weight]
 rename fourweekshigh childhealth_fracunder4
 rename durationhigh childhealth_dayspaid
 gen mergeid = 1
-save childhealth_fracunder4_paid, replace
+save "intermediate_files/childhealth_fracunder4_paid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse fourweekshigh durationhigh if spousehealth1==1 & FMLAelig==1 & paid==1 [aweight=weight]
 rename fourweekshigh spousehealth_fracunder4
 rename durationhigh spousehealth_dayspaid
 gen mergeid = 1
-save spousehealth_fracunder4_paid, replace
+save "intermediate_files/spousehealth_fracunder4_paid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse fourweekshigh durationhigh if parenthealth1==1 & FMLAelig==1 & paid==1 [aweight=weight]
 rename fourweekshigh parenthealth_fracunder4
 rename durationhigh parenthealth_dayspaid
 gen mergeid = 1
-save parenthealth_fracunder4_paid, replace
+save "intermediate_files/parenthealth_fracunder4_paid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse fourweekshigh durationhigh if otherrelhealth1==1 & FMLAelig==1 & paid==1 [aweight=weight]
 rename fourweekshigh otherrelhealth_fracunder4
 rename durationhigh otherrelhealth_dayspaid
 gen mergeid = 1
-save otherrelhealth_fracunder4_paid, replace
+save "intermediate_files/otherrelhealth_fracunder4_paid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse fourweekshigh durationhigh if military1==1 & FMLAelig==1 & paid==1 [aweight=weight]
 rename fourweekshigh military_fracunder4
 rename durationhigh military_dayspaid
 gen mergeid = 1
-save military_fracunder4_paid, replace
+save "intermediate_files/military_fracunder4_paid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse fourweekshigh durationhigh if otherreason1==1 & FMLAelig==1 & paid==1 [aweight=weight]
 rename fourweekshigh otherreason_fracunder4
 rename durationhigh otherreason_dayspaid
 gen mergeid = 1
-save otherreason_fracunder4_paid, replace
+save "intermediate_files/otherreason_fracunder4_paid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse fourweekshigh durationhigh if newchild1==1 & FMLAelig==1 & paid==1 [aweight=weight]
 rename fourweekshigh newchild_fracunder4
 rename durationhigh newchild_dayspaid
 gen mergeid = 1
-save newchild_fracunder4_paid, replace
+save "intermediate_files/newchild_fracunder4_paid.dta", replace
 
-use ownhealth_fracunder4_paid, clear
-merge 1:1 mergeid using childhealth_fracunder4_paid, nogen
-merge 1:1 mergeid using spousehealth_fracunder4_paid, nogen
-merge 1:1 mergeid using parenthealth_fracunder4_paid, nogen
-merge 1:1 mergeid using otherrelhealth_fracunder4_paid, nogen
-merge 1:1 mergeid using military_fracunder4_paid, nogen
-merge 1:1 mergeid using otherreason_fracunder4_paid, nogen
-merge 1:1 mergeid using newchild_fracunder4_paid, nogen
-save fracunder4_paid, replace
+use "intermediate_files/ownhealth_fracunder4_paid.dta", clear
+merge 1:1 mergeid using "intermediate_files/childhealth_fracunder4_paid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/spousehealth_fracunder4_paid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/parenthealth_fracunder4_paid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/otherrelhealth_fracunder4_paid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/military_fracunder4_paid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/otherreason_fracunder4_paid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/newchild_fracunder4_paid.dta", nogen
+save "intermediate_files/fracunder4_paid.dta", replace
 
 /* Save duration for those unpaid */
 // Condition: eligible & took given type of leave & unpaid
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse durationhigh if ownhealth1==1 & FMLAelig==1 & paid==0 [aweight=weight]
 rename durationhigh ownhealth_daysunpaid
 gen mergeid = 1
-save ownhealth_daysunpaid, replace
+save "intermediate_files/ownhealth_daysunpaid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse durationhigh if childhealth1==1 & FMLAelig==1 & paid==0 [aweight=weight]
 rename durationhigh childhealth_daysunpaid
 gen mergeid = 1
-save childhealth_daysunpaid, replace
+save "intermediate_files/childhealth_daysunpaid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse durationhigh if spousehealth1==1 & FMLAelig==1 & paid==0 [aweight=weight]
 rename durationhigh spousehealth_daysunpaid
 gen mergeid = 1
-save spousehealth_daysunpaid, replace
+save "intermediate_files/spousehealth_daysunpaid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse durationhigh if parenthealth1==1 & FMLAelig==1 & paid==0 [aweight=weight]
 rename durationhigh parenthealth_daysunpaid
 gen mergeid = 1
-save parenthealth_daysunpaid, replace
+save "intermediate_files/parenthealth_daysunpaid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse durationhigh if otherrelhealth1==1 & FMLAelig==1 & paid==0 [aweight=weight]
 rename durationhigh otherrelhealth_daysunpaid
 gen mergeid = 1
-save otherrelhealth_daysunpaid, replace
+save "intermediate_files/otherrelhealth_daysunpaid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse durationhigh if military1==1 & FMLAelig==1 & paid==0 [aweight=weight]
 rename durationhigh military_daysunpaid
 gen mergeid = 1
-save military_daysunpaid, replace
+save "intermediate_files/military_daysunpaid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 //No observations, set duration to zero
 **collapse durationhigh if otherreason1==1 & FMLAelig==1 & paid==0 [aweight=weight]
 **rename durationhigh otherreason_daysunpaid
 gen otherreason_daysunpaid = 0
 collapse otherreason_daysunpaid
 gen mergeid = 1
-save otherreason_daysunpaid, replace
+save "intermediate_files/otherreason_daysunpaid.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse durationhigh if newchild1==1 & FMLAelig==1 & paid==0 [aweight=weight]
 rename durationhigh newchild_daysunpaid
 gen mergeid = 1
-save newchild_daysunpaid, replace
+save "intermediate_files/newchild_daysunpaid.dta", replace
 
-use ownhealth_daysunpaid, clear
-merge 1:1 mergeid using childhealth_daysunpaid, nogen
-merge 1:1 mergeid using spousehealth_daysunpaid, nogen
-merge 1:1 mergeid using parenthealth_daysunpaid, nogen
-merge 1:1 mergeid using otherrelhealth_daysunpaid, nogen
-merge 1:1 mergeid using military_daysunpaid, nogen
-merge 1:1 mergeid using otherreason_daysunpaid, nogen
-merge 1:1 mergeid using newchild_daysunpaid, nogen
-save daysunpaid, replace
+use "intermediate_files/ownhealth_daysunpaid.dta", clear
+merge 1:1 mergeid using "intermediate_files/childhealth_daysunpaid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/spousehealth_daysunpaid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/parenthealth_daysunpaid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/otherrelhealth_daysunpaid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/military_daysunpaid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/otherreason_daysunpaid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/newchild_daysunpaid.dta", nogen
+save "intermediate_files/daysunpaid.dta", replace
 
 
 /* Save duration for those taking over 4 weeks */
 // Condition: eligible & took given type of leave & paid by employer & took over 4 weeks
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse durationhigh2 if ownhealth1==1 & FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight]
 rename durationhigh2 ownhealth_daysover
 gen mergeid = 1
-save ownhealth_daysover, replace
+save "intermediate_files/ownhealth_daysover.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse durationhigh2 if childhealth1==1 & FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight]
 rename durationhigh2 childhealth_daysover
 gen mergeid = 1
-save childhealth_daysover, replace
+save "intermediate_files/childhealth_daysover.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse durationhigh2 if spousehealth1==1 & FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight]
 rename durationhigh2 spousehealth_daysover
 gen mergeid = 1
-save spousehealth_daysover, replace
+save "intermediate_files/spousehealth_daysover.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse durationhigh2 if parenthealth1==1 & FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight]
 rename durationhigh2 parenthealth_daysover
 gen mergeid = 1
-save parenthealth_daysover, replace
+save "intermediate_files/parenthealth_daysover.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse durationhigh2 if otherrelhealth1==1 & FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight]
 rename durationhigh2 otherrelhealth_daysover
 gen mergeid = 1
-save otherrelhealth_daysover, replace
+save "intermediate_files/otherrelhealth_daysover.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse durationhigh2 if military1==1 & FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight]
 rename durationhigh2 military_daysover
 gen mergeid = 1
-save military_daysover, replace
+save "intermediate_files/military_daysover.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse durationhigh2 if otherreason1==1 & FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight]
 rename durationhigh2 otherreason_daysover
 gen mergeid = 1
-save otherreason_daysover, replace
+save "intermediate_files/otherreason_daysover.dta", replace
 
-use fmla2, clear
+use "intermediate_files/fmla2.dta", clear
 collapse durationhigh2 if newchild1==1 & FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight]
 rename durationhigh2 newchild_daysover
 gen mergeid = 1
-save newchild_daysover, replace
+save "intermediate_files/newchild_daysover.dta", replace
 
-use ownhealth_daysover, clear
-merge 1:1 mergeid using childhealth_daysover, nogen
-merge 1:1 mergeid using spousehealth_daysover, nogen
-merge 1:1 mergeid using parenthealth_daysover, nogen
-merge 1:1 mergeid using otherrelhealth_daysover, nogen
-merge 1:1 mergeid using military_daysover, nogen
-merge 1:1 mergeid using otherreason_daysover, nogen
-merge 1:1 mergeid using newchild_daysover, nogen
-save daysover, replace
+use "intermediate_files/ownhealth_daysover.dta", clear
+merge 1:1 mergeid using "intermediate_files/childhealth_daysover.dta", nogen
+merge 1:1 mergeid using "intermediate_files/spousehealth_daysover.dta", nogen
+merge 1:1 mergeid using "intermediate_files/parenthealth_daysover.dta", nogen
+merge 1:1 mergeid using "intermediate_files/otherrelhealth_daysover.dta", nogen
+merge 1:1 mergeid using "intermediate_files/military_daysover.dta", nogen
+merge 1:1 mergeid using "intermediate_files/otherreason_daysover.dta", nogen
+merge 1:1 mergeid using "intermediate_files/newchild_daysover.dta", nogen
+save "intermediate_files/daysover.dta", replace
 
 
 /* Merge FMLA results together */
-use takeupshares, clear
-merge 1:1 mergeid using fracpaid, nogen
-merge 1:1 mergeid using fracunder4_paid, nogen
-merge 1:1 mergeid using daysunpaid, nogen
-merge 1:1 mergeid using daysover, nogen
+use "intermediate_files/takeupshares.dta", clear
+merge 1:1 mergeid using "intermediate_files/fracpaid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/fracunder4_paid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/daysunpaid.dta", nogen
+merge 1:1 mergeid using "intermediate_files/daysover.dta", nogen
 merge 1:1 mergeid using assumptions, nogen
 
 /* Calculate expected expected duration total*/
@@ -444,7 +444,7 @@ gen military_expdur = military_expdur_unpaid + military_expdur_paid + military_e
 gen otherreason_expdur = otherreason_expdur_unpaid + otherreason_expdur_paid + otherreason_expdur_over
 gen newchild_expdur = newchild_expdur_unpaid + newchild_expdur_paid + newchild_expdur_over
 
-save fmla_results, replace
+save "intermediate_files/fmla_results.dta", replace
 
 
 ************************************
@@ -471,7 +471,7 @@ merge m:1 mergeid using parameters
 drop _merge
 
 // Merge in results of FMLA analysis
-merge m:1 mergeid using fmla_results
+merge m:1 mergeid using "intermediate_files/fmla_results.dta"
 drop mergeid _merge
 
 // Calculate expected total leave taken
