@@ -1,5 +1,5 @@
 # Set-up Instructions
-This file explains how to download and set up the necessary datasets to run PFLCM.
+This file explains how to download and set up the necessary datasets to run PFL-CM.
 
 ## FMLA Public Use File
  - Download the Public Use File for Employees from the Department of Labor: https://www.dol.gov/whd/fmla/survey/
