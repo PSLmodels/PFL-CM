@@ -2,9 +2,9 @@
     "project_one_line": {
         "start_header": null,
         "end_header": null,
-        "source": null,
-        "type": null,
-        "data": null
+        "source": "https://github.com/open-source-economics/PFL-CM",
+        "type": "html",
+        "data": "<p>A model to evaluate the total cost of paid family and medical leave policy proposals</p>"
     },
     "key_features": {
         "start_header": null,
@@ -84,7 +84,7 @@
         "data": null
     },
     "contributor_overview": {
-        "start_header": null,
+        "start_header": "FMLA Public Use File",
         "end_header": null,
         "source": "documentation/setup_instructions.md",
         "type": "github_file",
@@ -135,9 +135,9 @@
     "core_maintainers": {
         "start_header": null,
         "end_header": null,
-        "data": null,
+        "data": "<ul><li>Ben Gitis</li><li>Cody Kallen</li></ul>",
         "source": null,
-        "type": null
+        "type": "html"
     },
     "unit_test": {
         "start_header": null,
