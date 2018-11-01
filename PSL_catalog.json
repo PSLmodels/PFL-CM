@@ -1,0 +1,156 @@
+{
+    "project_one_line": {
+        "start_header": null,
+        "end_header": null,
+        "source": "https://github.com/open-source-economics/PFL-CM",
+        "type": "html",
+        "data": "<p>A model to evaluate the total cost of paid family and medical leave policy proposals</p>"
+    },
+    "key_features": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "project_overview": {
+        "start_header": "About PFL-CM",
+        "end_header": "Disclaimer",
+        "source": "README.md",
+        "type": "github_file",
+        "data": null
+    },
+    "citation": {
+        "start_header": "Citing PFL-CM",
+        "end_header": null,
+        "source": "README.md",
+        "type": "github_file",
+        "data": null
+    },
+    "license": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "data": null,
+        "type": null
+    },
+    "user_documentation": {
+        "start_header": "Documentation",
+        "end_header": "Citing PFL-CM",
+        "source": "README.md",
+        "type": "github_file",
+        "data": null
+    },
+    "user_changelog": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "user_changelog_recent": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "dev_changelog": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "disclaimer": {
+        "start_header": "Disclaimer",
+        "end_header": "Documentation",
+        "source": "README.md",
+        "type": "github_file",
+        "data": null
+    },
+    "user_case_studies": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "project_roadmap": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "contributor_overview": {
+        "start_header": "FMLA Public Use File",
+        "end_header": null,
+        "source": "documentation/setup_instructions.md",
+        "type": "github_file",
+        "data": null
+    },
+    "contributor_guide": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "governance_overview": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "public_funding": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "link_to_webapp": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "public_issue_tracker": {
+        "start_header": null,
+        "end_header": null,
+        "data": "<a href=\"https://github.com/open-source-economics/PFL-CM/issues\">https://github.com/open-source-economics/PFL-CM/issues</a>",
+        "source": null,
+        "type": "html"
+    },
+    "public_qanda": {
+        "start_header": null,
+        "end_header": null,
+        "data": "<a href=\"https://github.com/open-source-economics/PFL-CM/issues\">https://github.com/open-source-economics/PFL-CM/issues</a>",
+        "source": null,
+        "type": "html"
+    },
+    "core_maintainers": {
+        "start_header": null,
+        "end_header": null,
+        "data": "<ul><li>Ben Gitis</li><li>Cody Kallen</li></ul>",
+        "source": null,
+        "type": "html"
+    },
+    "unit_test": {
+        "start_header": null,
+        "end_header": null,
+        "data": "<a href=\"https://github.com/open-source-economics/PFL-CM/tree/master/tests\">https://github.com/open-source-economics/PFL-CM/tree/master/tests</a>",
+        "source": "https://github.com/open-source-economics/PFL-CM/tree/master/tests",
+        "type": "html"
+    },
+    "integration_test": {
+        "start_header": null,
+        "end_header": null,
+        "data": "<a href=\"https://github.com/open-source-economics/PFL-CM/tree/master/tests\">https://github.com/open-source-economics/PFL-CM/tree/master/tests</a>",
+        "source": "https://github.com/open-source-economics/PFL-CM/tree/master/tests",
+        "type": "html"
+    }
+}
