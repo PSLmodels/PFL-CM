@@ -18,4 +18,4 @@ PFL-CM (Version 0.1.0)[Source code], https://github.com/open-source-economics/PF
 
 ## Current Maintainers
 - Ben Gitis (model creator) - American Action Forum 
-- Cody Kallen - University of Wisconsin
+- Cody Kallen - University of Wisconsin-Madison
