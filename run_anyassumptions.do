@@ -107,6 +107,7 @@ replace otherreason1=0 if A5_1_CAT!=20
 gen newchild1=1 if A5_1_CAT==21
 replace newchild1=0 if A5_1_CAT!=21
 
+gen leaveid = ownhealth1 + 2*childhealth1 + 3*spousehealth1 + 4*parenthealth1 + 5*otherrelhealth1 + 6*military1 + 7*otherreason1 + 8*newchild1
 
 /* Workers paid by employer */
 
@@ -127,323 +128,115 @@ save "intermediate_files/fmla2.dta", replace
 
 /* Save take-up shares */
 // Condition: eligible and took leave
+
 use "intermediate_files/fmla2.dta", clear
 collapse ownhealth1 childhealth1 spousehealth1 parenthealth1 otherrelhealth1 military1 otherreason1 newchild1 if FMLAleavetaker==1 & FMLAelig==1 [aweight=weight]
-gen mergeid = 1
+xpose, clear varname
+gen leaveid = .
+replace leaveid = 1 if _varname=="ownhealth1"
+replace leaveid = 2 if _varname=="childhealth1"
+replace leaveid = 3 if _varname=="spousehealth1"
+replace leaveid = 4 if _varname=="parenthealth1"
+replace leaveid = 5 if _varname=="otherrelhealth1"
+replace leaveid = 6 if _varname=="military1"
+replace leaveid = 7 if _varname=="otherreason1"
+replace leaveid = 8 if _varname=="newchild1"
+drop _varname
+rename v1 takeupshare
+order leaveid takeupshare
 save "intermediate_files/takeupshares.dta", replace
 
 /* Save fraction paid */
 // Condition: eligible & took given type of leave
 use "intermediate_files/fmla2.dta", clear
-collapse paid if ownhealth1==1 & FMLAelig==1 [aweight=weight]
-rename paid ownhealth_fracpaid
-gen mergeid = 1
-save "intermediate_files/ownhealth_fracpaid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse paid if childhealth1==1 & FMLAelig==1 [aweight=weight]
-rename paid childhealth_fracpaid
-gen mergeid = 1
-save "intermediate_files/childhealth_fracpaid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse paid if spousehealth1==1 & FMLAelig==1 [aweight=weight]
-rename paid spousehealth_fracpaid
-gen mergeid = 1
-save "intermediate_files/spousehealth_fracpaid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse paid if parenthealth1==1 & FMLAelig==1 [aweight=weight]
-rename paid parenthealth_fracpaid
-gen mergeid = 1
-save "intermediate_files/parenthealth_fracpaid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse paid if otherrelhealth1==1 & FMLAelig==1 [aweight=weight]
-rename paid otherrelhealth_fracpaid
-gen mergeid = 1
-save "intermediate_files/otherrelhealth_fracpaid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse paid if military1==1 & FMLAelig==1 [aweight=weight]
-rename paid military_fracpaid
-gen mergeid = 1
-save "intermediate_files/military_fracpaid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse paid if otherreason1==1 & FMLAelig==1 [aweight=weight]
-rename paid otherreason_fracpaid
-gen mergeid = 1
-save "intermediate_files/otherreason_fracpaid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse paid if newchild1==1 & FMLAelig==1 [aweight=weight]
-rename paid newchild_fracpaid
-gen mergeid = 1
-save "intermediate_files/newchild_fracpaid.dta", replace
-
-use "intermediate_files/ownhealth_fracpaid.dta", clear
-merge 1:1 mergeid using "intermediate_files/childhealth_fracpaid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/spousehealth_fracpaid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/parenthealth_fracpaid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/otherrelhealth_fracpaid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/military_fracpaid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/otherreason_fracpaid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/newchild_fracpaid.dta", nogen
+collapse paid if FMLAelig==1 [aweight=weight], by(leaveid)
+drop if leaveid==0
 save "intermediate_files/fracpaid.dta", replace
 
 /* Save fraction under 4 weeks and duration for those paid */
 // Condition: eligible & took given type of leave & paid by employer
 use "intermediate_files/fmla2.dta", clear
-collapse fourweekshigh durationhigh if ownhealth1==1 & FMLAelig==1 & paid==1 [aweight=weight]
-rename fourweekshigh ownhealth_fracunder4
-rename durationhigh ownhealth_dayspaid
-gen mergeid = 1
-save "intermediate_files/ownhealth_fracunder4_paid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse fourweekshigh durationhigh if childhealth1==1 & FMLAelig==1 & paid==1 [aweight=weight]
-rename fourweekshigh childhealth_fracunder4
-rename durationhigh childhealth_dayspaid
-gen mergeid = 1
-save "intermediate_files/childhealth_fracunder4_paid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse fourweekshigh durationhigh if spousehealth1==1 & FMLAelig==1 & paid==1 [aweight=weight]
-rename fourweekshigh spousehealth_fracunder4
-rename durationhigh spousehealth_dayspaid
-gen mergeid = 1
-save "intermediate_files/spousehealth_fracunder4_paid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse fourweekshigh durationhigh if parenthealth1==1 & FMLAelig==1 & paid==1 [aweight=weight]
-rename fourweekshigh parenthealth_fracunder4
-rename durationhigh parenthealth_dayspaid
-gen mergeid = 1
-save "intermediate_files/parenthealth_fracunder4_paid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse fourweekshigh durationhigh if otherrelhealth1==1 & FMLAelig==1 & paid==1 [aweight=weight]
-rename fourweekshigh otherrelhealth_fracunder4
-rename durationhigh otherrelhealth_dayspaid
-gen mergeid = 1
-save "intermediate_files/otherrelhealth_fracunder4_paid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse fourweekshigh durationhigh if military1==1 & FMLAelig==1 & paid==1 [aweight=weight]
-rename fourweekshigh military_fracunder4
-rename durationhigh military_dayspaid
-gen mergeid = 1
-save "intermediate_files/military_fracunder4_paid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse fourweekshigh durationhigh if otherreason1==1 & FMLAelig==1 & paid==1 [aweight=weight]
-rename fourweekshigh otherreason_fracunder4
-rename durationhigh otherreason_dayspaid
-gen mergeid = 1
-save "intermediate_files/otherreason_fracunder4_paid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse fourweekshigh durationhigh if newchild1==1 & FMLAelig==1 & paid==1 [aweight=weight]
-rename fourweekshigh newchild_fracunder4
-rename durationhigh newchild_dayspaid
-gen mergeid = 1
-save "intermediate_files/newchild_fracunder4_paid.dta", replace
-
-use "intermediate_files/ownhealth_fracunder4_paid.dta", clear
-merge 1:1 mergeid using "intermediate_files/childhealth_fracunder4_paid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/spousehealth_fracunder4_paid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/parenthealth_fracunder4_paid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/otherrelhealth_fracunder4_paid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/military_fracunder4_paid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/otherreason_fracunder4_paid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/newchild_fracunder4_paid.dta", nogen
+collapse fourweekshigh durationhigh if FMLAelig==1 & paid==1 [aweight=weight], by(leaveid)
+rename fourweekshigh fracunder4
+rename durationhigh dayspaid
+drop if leaveid==0
 save "intermediate_files/fracunder4_paid.dta", replace
 
 /* Save duration for those unpaid */
 // Condition: eligible & took given type of leave & unpaid
 use "intermediate_files/fmla2.dta", clear
-collapse durationhigh if ownhealth1==1 & FMLAelig==1 & paid==0 [aweight=weight]
-rename durationhigh ownhealth_daysunpaid
-gen mergeid = 1
-save "intermediate_files/ownhealth_daysunpaid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse durationhigh if childhealth1==1 & FMLAelig==1 & paid==0 [aweight=weight]
-rename durationhigh childhealth_daysunpaid
-gen mergeid = 1
-save "intermediate_files/childhealth_daysunpaid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse durationhigh if spousehealth1==1 & FMLAelig==1 & paid==0 [aweight=weight]
-rename durationhigh spousehealth_daysunpaid
-gen mergeid = 1
-save "intermediate_files/spousehealth_daysunpaid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse durationhigh if parenthealth1==1 & FMLAelig==1 & paid==0 [aweight=weight]
-rename durationhigh parenthealth_daysunpaid
-gen mergeid = 1
-save "intermediate_files/parenthealth_daysunpaid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse durationhigh if otherrelhealth1==1 & FMLAelig==1 & paid==0 [aweight=weight]
-rename durationhigh otherrelhealth_daysunpaid
-gen mergeid = 1
-save "intermediate_files/otherrelhealth_daysunpaid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse durationhigh if military1==1 & FMLAelig==1 & paid==0 [aweight=weight]
-rename durationhigh military_daysunpaid
-gen mergeid = 1
-save "intermediate_files/military_daysunpaid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-//No observations, set duration to zero
-**collapse durationhigh if otherreason1==1 & FMLAelig==1 & paid==0 [aweight=weight]
-**rename durationhigh otherreason_daysunpaid
-gen otherreason_daysunpaid = 0
-collapse otherreason_daysunpaid
-gen mergeid = 1
-save "intermediate_files/otherreason_daysunpaid.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse durationhigh if newchild1==1 & FMLAelig==1 & paid==0 [aweight=weight]
-rename durationhigh newchild_daysunpaid
-gen mergeid = 1
-save "intermediate_files/newchild_daysunpaid.dta", replace
-
-use "intermediate_files/ownhealth_daysunpaid.dta", clear
-merge 1:1 mergeid using "intermediate_files/childhealth_daysunpaid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/spousehealth_daysunpaid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/parenthealth_daysunpaid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/otherrelhealth_daysunpaid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/military_daysunpaid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/otherreason_daysunpaid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/newchild_daysunpaid.dta", nogen
+collapse durationhigh if FMLAelig==1 & paid==0 [aweight=weight], by(leaveid)
+rename durationhigh daysunpaid
+drop if leaveid==0
 save "intermediate_files/daysunpaid.dta", replace
 
 
 /* Save duration for those taking over 4 weeks */
 // Condition: eligible & took given type of leave & paid by employer & took over 4 weeks
 use "intermediate_files/fmla2.dta", clear
-collapse durationhigh2 if ownhealth1==1 & FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight]
-rename durationhigh2 ownhealth_daysover
-gen mergeid = 1
-save "intermediate_files/ownhealth_daysover.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse durationhigh2 if childhealth1==1 & FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight]
-rename durationhigh2 childhealth_daysover
-gen mergeid = 1
-save "intermediate_files/childhealth_daysover.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse durationhigh2 if spousehealth1==1 & FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight]
-rename durationhigh2 spousehealth_daysover
-gen mergeid = 1
-save "intermediate_files/spousehealth_daysover.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse durationhigh2 if parenthealth1==1 & FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight]
-rename durationhigh2 parenthealth_daysover
-gen mergeid = 1
-save "intermediate_files/parenthealth_daysover.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse durationhigh2 if otherrelhealth1==1 & FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight]
-rename durationhigh2 otherrelhealth_daysover
-gen mergeid = 1
-save "intermediate_files/otherrelhealth_daysover.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse durationhigh2 if military1==1 & FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight]
-rename durationhigh2 military_daysover
-gen mergeid = 1
-save "intermediate_files/military_daysover.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse durationhigh2 if otherreason1==1 & FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight]
-rename durationhigh2 otherreason_daysover
-gen mergeid = 1
-save "intermediate_files/otherreason_daysover.dta", replace
-
-use "intermediate_files/fmla2.dta", clear
-collapse durationhigh2 if newchild1==1 & FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight]
-rename durationhigh2 newchild_daysover
-gen mergeid = 1
-save "intermediate_files/newchild_daysover.dta", replace
-
-use "intermediate_files/ownhealth_daysover.dta", clear
-merge 1:1 mergeid using "intermediate_files/childhealth_daysover.dta", nogen
-merge 1:1 mergeid using "intermediate_files/spousehealth_daysover.dta", nogen
-merge 1:1 mergeid using "intermediate_files/parenthealth_daysover.dta", nogen
-merge 1:1 mergeid using "intermediate_files/otherrelhealth_daysover.dta", nogen
-merge 1:1 mergeid using "intermediate_files/military_daysover.dta", nogen
-merge 1:1 mergeid using "intermediate_files/otherreason_daysover.dta", nogen
-merge 1:1 mergeid using "intermediate_files/newchild_daysover.dta", nogen
+collapse durationhigh2 if FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight], by(leaveid)
+rename durationhigh2 daysover
+drop if leaveid==0
 save "intermediate_files/daysover.dta", replace
 
 
 /* Merge FMLA results together */
 use "intermediate_files/takeupshares.dta", clear
-merge 1:1 mergeid using "intermediate_files/fracpaid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/fracunder4_paid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/daysunpaid.dta", nogen
-merge 1:1 mergeid using "intermediate_files/daysover.dta", nogen
-merge 1:1 mergeid using assumptions, nogen
+merge 1:1 leaveid using "intermediate_files/fracpaid.dta", nogen
+merge 1:1 leaveid using "intermediate_files/fracunder4_paid.dta", nogen
+merge 1:1 leaveid using "intermediate_files/daysunpaid.dta", nogen
+// Replace missing duration with zero
+replace daysunpaid = 0 if daysunpaid==.
+merge 1:1 leaveid using "intermediate_files/daysover.dta", nogen
+
+/* Merge in assumptions */
+gen mergeid = 1
+merge m:1 mergeid using assumptions, nogen
+// Clean up assumptions structure
+gen reduce = .
+replace reduce = reduce_ownhealth if leaveid==1
+replace reduce = reduce_childhealth if leaveid==2
+replace reduce = reduce_spousehealth if leaveid==3
+replace reduce = reduce_parenthealth if leaveid==4
+replace reduce = reduce_otherrelhealth if leaveid==5
+replace reduce = reduce_military if leaveid==6
+replace reduce = reduce_otherreason if leaveid==7
+replace reduce = reduce_newchild if leaveid==8
+drop reduce_*
 
 /* Calculate expected expected duration total*/
 // Overall take-up rates
-gen ownhealth_rate = ownhealth1 * overall_takeup * reduce_ownhealth
-gen childhealth_rate = childhealth1 * overall_takeup * reduce_childhealth
-gen spousehealth_rate = spousehealth1 * overall_takeup * reduce_spousehealth
-gen parenthealth_rate = parenthealth1 * overall_takeup * reduce_parenthealth
-gen otherrelhealth_rate = otherrelhealth1 * overall_takeup * reduce_otherrelhealth
-gen military_rate = military1 * overall_takeup * reduce_military
-gen otherreason_rate = otherreason1 * overall_takeup * reduce_otherreason
-gen newchild_rate = newchild1 * overall_takeup * reduce_newchild
+gen takeuprate = takeupshare * overall_takeup * reduce
 
 // Expected duration for those not paid by employers
-gen ownhealth_expdur_unpaid = ownhealth_rate * (1 - ownhealth_fracpaid) * ownhealth_daysunpaid
-gen childhealth_expdur_unpaid = childhealth_rate * (1 - childhealth_fracpaid) * childhealth_daysunpaid
-gen spousehealth_expdur_unpaid = spousehealth_rate * (1 - spousehealth_fracpaid) * spousehealth_daysunpaid
-gen parenthealth_expdur_unpaid = parenthealth_rate * (1 - parenthealth_fracpaid) * parenthealth_daysunpaid
-gen otherrelhealth_expdur_unpaid = otherrelhealth_rate * (1 - otherrelhealth_fracpaid) * otherrelhealth_daysunpaid
-gen military_expdur_unpaid = military_rate * (1 - military_fracpaid) * military_daysunpaid
-gen otherreason_expdur_unpaid = otherreason_rate * (1 - otherreason_fracpaid) * otherreason_daysunpaid
-gen newchild_expdur_unpaid = newchild_rate * (1 - newchild_fracpaid) * newchild_daysunpaid
+gen expdur_unpaid = takeuprate * (1 - paid) * daysunpaid
 
 // Expected duration for those pushed onto the program
-gen ownhealth_expdur_paid = ownhealth_rate * frac_employerpush * ownhealth_fracpaid * ownhealth_dayspaid
-gen childhealth_expdur_paid = childhealth_rate * frac_employerpush * childhealth_fracpaid * childhealth_dayspaid
-gen spousehealth_expdur_paid = spousehealth_rate * frac_employerpush * spousehealth_fracpaid * spousehealth_dayspaid
-gen parenthealth_expdur_paid = parenthealth_rate * frac_employerpush * parenthealth_fracpaid * parenthealth_dayspaid
-gen otherrelhealth_expdur_paid = otherrelhealth_rate * frac_employerpush * otherrelhealth_fracpaid * otherrelhealth_dayspaid
-gen military_expdur_paid = military_rate * frac_employerpush * military_fracpaid * military_dayspaid
-gen otherreason_expdur_paid = otherreason_rate * frac_employerpush * otherreason_fracpaid * otherreason_dayspaid
-gen newchild_expdur_paid = newchild_rate * frac_employerpush * newchild_fracpaid * newchild_dayspaid
+gen expdur_paid = takeuprate * paid * frac_employerpush * dayspaid
 
 // Expected duration for those on the program after 4 weeks
-gen ownhealth_expdur_over = ownhealth_rate * (1 - frac_employerpush) * ownhealth_fracpaid * (ownhealth_daysover - 20) * (1 - ownhealth_fracunder4)
-gen childhealth_expdur_over = childhealth_rate * (1 - frac_employerpush) * childhealth_fracpaid * (childhealth_daysover - 20) * (1 - childhealth_fracunder4)
-gen spousehealth_expdur_over = spousehealth_rate * (1 - frac_employerpush) * spousehealth_fracpaid * (spousehealth_daysover - 20) * (1 - spousehealth_fracunder4)
-gen parenthealth_expdur_over = parenthealth_rate * (1 - frac_employerpush) * parenthealth_fracpaid * (parenthealth_daysover - 20) * (1 - parenthealth_fracunder4)
-gen otherrelhealth_expdur_over = otherrelhealth_rate * (1 - frac_employerpush) * otherrelhealth_fracpaid * (otherrelhealth_daysover - 20) * (1 - otherrelhealth_fracunder4)
-gen military_expdur_over = military_rate * (1 - frac_employerpush) * military_fracpaid * (military_daysover - 20) * (1 - military_fracunder4)
-gen otherreason_expdur_over = otherreason_rate * (1 - frac_employerpush) * otherreason_fracpaid * (otherreason_daysover - 20) * (1 - otherreason_fracunder4)
-gen newchild_expdur_over = newchild_rate * (1 - frac_employerpush) * newchild_fracpaid * (newchild_daysover - 20) * (1 - newchild_fracunder4)
+gen expdur_over = takeuprate * paid * (1 - frac_employerpush) * (1 - fracunder4) * (daysover - 20)
 
 // Expected duration
-gen ownhealth_expdur = ownhealth_expdur_unpaid + ownhealth_expdur_paid + ownhealth_expdur_over
-gen childhealth_expdur = childhealth_expdur_unpaid + childhealth_expdur_paid + childhealth_expdur_over
-gen spousehealth_expdur = spousehealth_expdur_unpaid + spousehealth_expdur_paid + spousehealth_expdur_over
-gen parenthealth_expdur = parenthealth_expdur_unpaid + parenthealth_expdur_paid + parenthealth_expdur_over
-gen otherrelhealth_expdur = otherrelhealth_expdur_unpaid + otherrelhealth_expdur_paid + otherrelhealth_expdur_over
-gen military_expdur = military_expdur_unpaid + military_expdur_paid + military_expdur_over
-gen otherreason_expdur = otherreason_expdur_unpaid + otherreason_expdur_paid + otherreason_expdur_over
-gen newchild_expdur = newchild_expdur_unpaid + newchild_expdur_paid + newchild_expdur_over
+gen expdur = expdur_unpaid + expdur_paid + expdur_over
 
+/* Total up for included leave types */
+keep leaveid mergeid expdur
+merge m:1 mergeid using parameters, nogen
+keep leaveid mergeid expdur include_*
+gen includes = .
+replace includes = include_ownhealth if leaveid==1
+replace includes = include_childhealth if leaveid==2
+replace includes = include_spousehealth if leaveid==3
+replace includes = include_parenthealth if leaveid==4
+replace includes = include_otherrelhealth if leaveid==5
+replace includes = include_military if leaveid==6
+replace includes = include_otherreason if leaveid==7
+replace includes = include_newchild if leaveid==8
+drop include_*
+gen expdur2 = expdur * includes
+collapse (mean) mergeid (sum) expdur2
+rename expdur2 leave_expdur
 save "intermediate_files/fmla_results.dta", replace
 
 
@@ -473,18 +266,6 @@ drop _merge
 // Merge in results of FMLA analysis
 merge m:1 mergeid using "intermediate_files/fmla_results.dta"
 drop mergeid _merge
-
-// Calculate expected total leave taken
-replace ownhealth_expdur = ownhealth_expdur * include_ownhealth
-replace childhealth_expdur = childhealth_expdur * include_childhealth
-replace spousehealth_expdur = spousehealth_expdur * include_spousehealth
-replace parenthealth_expdur = parenthealth_expdur * include_parenthealth
-replace otherrelhealth_expdur = otherrelhealth_expdur * include_otherrelhealth
-replace military_expdur = military_expdur * include_military
-replace otherreason_expdur = otherreason_expdur * include_otherreason
-replace newchild_expdur = newchild_expdur * include_newchild
-
-gen leave_expdur = ownhealth_expdur + childhealth_expdur + spousehealth_expdur + parenthealth_expdur + otherrelhealth_expdur + military_expdur + otherreason_expdur + newchild_expdur
 
 // Exclude those who do not meet the required hours worked
 replace leave_expdur = 0 if totalhours < work_requirement

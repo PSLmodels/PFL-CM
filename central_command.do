@@ -1,5 +1,3 @@
-*cd "[POINT TO DIRECTORY HERE]"
-
 /* Define parameters */
 use parameters, clear
 replace maxduration_days = 40
