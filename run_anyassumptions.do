@@ -57,12 +57,13 @@ replace durationhigh=durationlow*2 if A3==1
 // Limit duration based on maximum leave available
 // durationhigh: duration of paid leave for those taking it immediately
 // durationhigh2: duration for those going onto the program after 4 weeks
-replace durationhigh = 0 if durationhigh<waiting_period & !missing(durationhigh)
-replace durationhigh = durationhigh - waiting_period if durationhigh>=waiting_period & !missing(durationhigh)
-replace durationhigh = maxduration_days if durationhigh>maxduration_days & !missing(durationhigh)
-
 gen durationhigh2 = durationhigh
-replace durationhigh2 = maxduration_days + 20 if durationhigh2>maxduration_days+20 & !missing(durationhigh2)
+replace durationhigh2 = 0 if durationhigh2<waiting_period & !missing(durationhigh2)
+replace durationhigh2 = durationhigh2 - waiting_period if durationhigh2>=waiting_period & !missing(durationhigh2)
+replace durationhigh2 = maxduration_days if durationhigh2>maxduration_days & !missing(durationhigh2)
+
+gen durationhigh3 = durationhigh
+replace durationhigh3 = maxduration_days + 20 if durationhigh3>maxduration_days+20 & !missing(durationhigh3)
 
 
 /* Workers who took medical, family, and parental, as defined under FMLA */
@@ -130,7 +131,7 @@ save "intermediate_files/fmla2.dta", replace
 // Condition: eligible and took leave
 
 use "intermediate_files/fmla2.dta", clear
-collapse ownhealth1 childhealth1 spousehealth1 parenthealth1 otherrelhealth1 military1 otherreason1 newchild1 if FMLAleavetaker==1 & FMLAelig==1 [aweight=weight]
+collapse ownhealth1 childhealth1 spousehealth1 parenthealth1 otherrelhealth1 military1 otherreason1 newchild1 if FMLAleavetaker==1 & FMLAelig==1 [aweight=weight], fast
 xpose, clear varname
 gen leaveid = .
 replace leaveid = 1 if _varname=="ownhealth1"
@@ -149,23 +150,23 @@ save "intermediate_files/takeupshares.dta", replace
 /* Save fraction paid */
 // Condition: eligible & took given type of leave
 use "intermediate_files/fmla2.dta", clear
-collapse paid if FMLAelig==1 [aweight=weight], by(leaveid)
+collapse paid if FMLAelig==1 [aweight=weight], by(leaveid) fast
 drop if leaveid==0
 save "intermediate_files/fracpaid.dta", replace
 
 /* Save fraction under 4 weeks and duration for those paid */
 // Condition: eligible & took given type of leave & paid by employer
 use "intermediate_files/fmla2.dta", clear
-collapse fourweekshigh durationhigh if FMLAelig==1 & paid==1 [aweight=weight], by(leaveid)
+collapse fourweekshigh durationhigh2 if FMLAelig==1 & paid==1 [aweight=weight], by(leaveid) fast
 rename fourweekshigh fracunder4
-rename durationhigh dayspaid
+rename durationhigh2 dayspaid
 drop if leaveid==0
 save "intermediate_files/fracunder4_paid.dta", replace
 
 /* Save duration for those unpaid */
 // Condition: eligible & took given type of leave & unpaid
 use "intermediate_files/fmla2.dta", clear
-collapse durationhigh if FMLAelig==1 & paid==0 [aweight=weight], by(leaveid)
+collapse durationhigh2 if FMLAelig==1 & paid==0 [aweight=weight], by(leaveid) fast
 rename durationhigh daysunpaid
 drop if leaveid==0
 save "intermediate_files/daysunpaid.dta", replace
@@ -174,8 +175,8 @@ save "intermediate_files/daysunpaid.dta", replace
 /* Save duration for those taking over 4 weeks */
 // Condition: eligible & took given type of leave & paid by employer & took over 4 weeks
 use "intermediate_files/fmla2.dta", clear
-collapse durationhigh2 if FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight], by(leaveid)
-rename durationhigh2 daysover
+collapse durationhigh3 if FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight], by(leaveid) fast
+rename durationhigh3 daysover
 drop if leaveid==0
 save "intermediate_files/daysover.dta", replace
 
@@ -235,7 +236,7 @@ replace includes = include_otherreason if leaveid==7
 replace includes = include_newchild if leaveid==8
 drop include_*
 gen expdur2 = expdur * includes
-collapse (mean) mergeid (sum) expdur2
+collapse (mean) mergeid (sum) expdur2, fast
 rename expdur2 leave_expdur
 save "intermediate_files/fmla_results.dta", replace
 

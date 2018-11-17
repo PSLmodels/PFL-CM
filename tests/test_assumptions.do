@@ -191,9 +191,9 @@ replace reduce_newchild = 1.0
 replace frac_employerpush = 0.4
 save assumptions, replace
 do "run_anyassumptions.do"
-gen pass_emppush_expben = (abs(expectedbenefit - 216.7027) < 0.01)
-gen pass_emppush_total = (abs(totalcost/10^9 - 34.512732) < 0.01)
-gen pass_emppush_payroll = (abs(payrollcost*100 - .39936295) < 0.01)
+gen pass_emppush_expben = (abs(expectedbenefit - 247.8717) < 0.01)
+gen pass_emppush_total = (abs(totalcost/10^9 - 39.476793) < 0.01)
+gen pass_emppush_payroll = (abs(payrollcost*100 - .45680446) < 0.01)
 drop expectedbenefit totalcost payrollcost
 gen mergeid = 1
 save "tests/test_assum_emppush_output.dta", replace
