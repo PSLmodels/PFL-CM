@@ -1,4 +1,52 @@
 ****************************
+***     Check inputs     ***
+****************************
+// Check parameter inputs for unallowable values
+use parameters, clear
+assert maxduration_days >= 0
+assert include_ownhealth==0 | include_ownhealth==1
+assert include_childhealth==0 | include_childhealth==1
+assert include_spousehealth==0 | include_spousehealth==1
+assert include_parenthealth==0 | include_parenthealth==1
+assert include_otherrelhealth==0 | include_otherrelhealth==1
+assert include_military==0 | include_military==1
+assert include_otherreason==0 | include_otherreason==1
+assert include_newchild==0 | include_newchild==1
+// Check parameter inputs for problematic values
+if maxduration_days > 121 {
+  noisily di as err "Warning: High value for maxduration_days"
+}
+if waiting_period > 20 {
+  noisily di as err "Warning: High value for waiting_period"
+}
+if replacementrate < 0 {
+  noisily di as err "Warning: Negative value for replacementrate"
+}
+if maxbenefit < 0 {
+  noisily di as err "Warning: Negative value for maxbenefit"
+}
+if work_requirement < 0 {
+  noisily di as err "Warning: Negative value for work requirement"
+}
+// Check assumption inputs for unallowable values
+use assumptions, clear
+assert overall_takeup >= 0
+assert reduce_ownhealth >= 0
+assert reduce_childhealth >= 0
+assert reduce_spousehealth >= 0
+assert reduce_parenthealth >= 0
+assert reduce_otherrelhealth >= 0
+assert reduce_military >= 0
+assert reduce_otherreason >= 0
+assert reduce_newchild >= 0
+assert frac_employerpush >= 0 | frac_employerpush <= 1
+// Check assumption inputs for problematic values
+if overall_takeup > 1 {
+  noisily di as err "Warning: High value for take-up rate"
+}
+
+
+****************************
 *** FMLA Survey Analysis ***
 ****************************
 // Determine eligibility for paid leave, assuming FMLA eligibility rules
@@ -186,9 +234,11 @@ use "intermediate_files/takeupshares.dta", clear
 merge 1:1 leaveid using "intermediate_files/fracpaid.dta", nogen
 merge 1:1 leaveid using "intermediate_files/fracunder4_paid.dta", nogen
 merge 1:1 leaveid using "intermediate_files/daysunpaid.dta", nogen
+merge 1:1 leaveid using "intermediate_files/daysover.dta", nogen
 // Replace missing duration with zero
 replace daysunpaid = 0 if daysunpaid==.
-merge 1:1 leaveid using "intermediate_files/daysover.dta", nogen
+replace dayspaid = 0 if dayspaid==.
+replace daysover = 0 if daysover==.
 
 /* Merge in assumptions */
 gen mergeid = 1

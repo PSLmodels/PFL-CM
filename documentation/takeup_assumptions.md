@@ -6,8 +6,9 @@
  - Recommended value: 0.159
    - Source: Fraction of employees who took leave the last 12 months, among FMLA eligible and covered employees, from [Klerman, Daley and Pozniak, (2012)](https://www.dol.gov/asp/evaluation/fmla/FMLA-2012-Technical-Report.pdf).
  - Limitations:
-   - Minimum: 0
-   - Maximum: 1
+   - Minimum: 0 (strict requirement)
+   - Maximum: 1 (recommendation)
+ - Note: A value greater than 1 should be interpreted as every eligible person taking paid leave at least once per year.
 
 ## Reduced take-up assumptions
 These parameters reduce the take-up rates for different types of leave. The parametes apply to each type of leave:
@@ -43,8 +44,9 @@ Recommended values:
 For a description of these and a comparison, see Gitis, Glynn and Hayes (2018) (forthcoming).
 
 Limitations: 
- - Minimum: 0
- - Maximum: 1
+ - Minimum: 0 (strict requirement)
+ - Maximum: 1 (recommendation)
+Note: A value greater than 1 should be interpreted as fraudulent use of the program.
 
 ## Employer push assumptions
 This parameter how employers respond to the creation of a paid leave program. 
@@ -60,5 +62,5 @@ This parameter how employers respond to the creation of a paid leave program.
    - Reduced employer push: `frac_employerpush = 0.4`
    - For a description of these and a comparison, see Gitis, Glynn and Hayes (2018) (forthcoming)
  - Limitations:
-   - Minimum: 0
-   - Maximum: 1
+   - Minimum: 0 (strict requirement)
+   - Maximum: 1 (strict requirement)
