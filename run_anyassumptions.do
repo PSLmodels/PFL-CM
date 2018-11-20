@@ -29,7 +29,7 @@ if work_requirement < 0 {
   noisily di as err "Warning: Negative value for work requirement"
 }
 // Check assumption inputs for unallowable values
-use assumptions, clear
+merge 1:1 mergeid using assumptions, nogen
 assert overall_takeup >= 0
 assert reduce_ownhealth >= 0
 assert reduce_childhealth >= 0
@@ -39,11 +39,15 @@ assert reduce_otherrelhealth >= 0
 assert reduce_military >= 0
 assert reduce_otherreason >= 0
 assert reduce_newchild >= 0
-assert frac_employerpush >= 0 | frac_employerpush <= 1
+assert frac_fullpush >= 0
+assert frac_partialpush >= 0
+assert round(frac_fullpush + frac_partialpush, 0.0001) <= 1.0
+assert delay_partialpush >= 0
 // Check assumption inputs for problematic values
 if overall_takeup > 1 {
   noisily di as err "Warning: High value for take-up rate"
 }
+save "intermediate_files/param_assum.dta", replace
 
 
 ****************************
@@ -57,12 +61,9 @@ replace FMLAelig = 1 if (E11 == 1) & (E13 == 1) & inrange(E15_CAT_REV,5,8)
 replace FMLAelig = 1 if inrange(E12,6,9) & (E13 == 1) & (E14 ==1)
 replace FMLAelig = 1 if inrange(E12,6,9) & (E13 == 1) & inrange(E15_CAT_REV,5,8)
 
-// Merge in policy parameters
+// Merge in policy parameters and assumptions
 gen mergeid = 1
-merge m:1 mergeid using parameters, nogen
-
-// Merge in assumption variables
-merge m:1 mergeid using assumptions, nogen
+merge m:1 mergeid using "intermediate_files/param_assum.dta", nogen
 drop mergeid
 
 
@@ -111,7 +112,7 @@ replace durationhigh2 = durationhigh2 - waiting_period if durationhigh2>=waiting
 replace durationhigh2 = maxduration_days if durationhigh2>maxduration_days & !missing(durationhigh2)
 
 gen durationhigh3 = durationhigh
-replace durationhigh3 = maxduration_days + 20 if durationhigh3>maxduration_days+20 & !missing(durationhigh3)
+replace durationhigh3 = maxduration_days + delay_partialpush if durationhigh3>maxduration_days+delay_partialpus & !missing(durationhigh3)
 
 
 /* Workers who took medical, family, and parental, as defined under FMLA */
@@ -165,8 +166,8 @@ replace paid=0 if A45==2
 
 
 /*Workers who take at or below 4 weeks of leave*/
-gen fourweekshigh=1 if durationhigh<=20
-replace fourweekshigh=0 if durationhigh>20 & durationhigh<=242
+gen leavebelowdelay=1 if durationhigh<=delay_partialpush
+replace leavebelowdelay=0 if durationhigh>delay_partialpush & durationhigh<=242
 
 save "intermediate_files/fmla2.dta", replace
 
@@ -205,11 +206,11 @@ save "intermediate_files/fracpaid.dta", replace
 /* Save fraction under 4 weeks and duration for those paid */
 // Condition: eligible & took given type of leave & paid by employer
 use "intermediate_files/fmla2.dta", clear
-collapse fourweekshigh durationhigh2 if FMLAelig==1 & paid==1 [aweight=weight], by(leaveid) fast
-rename fourweekshigh fracunder4
+collapse leavebelowdelay durationhigh2 if FMLAelig==1 & paid==1 [aweight=weight], by(leaveid) fast
+rename leavebelowdelay fracunderdelay
 rename durationhigh2 dayspaid
 drop if leaveid==0
-save "intermediate_files/fracunder4_paid.dta", replace
+save "intermediate_files/fracunderdelay_paid.dta", replace
 
 /* Save duration for those unpaid */
 // Condition: eligible & took given type of leave & unpaid
@@ -223,7 +224,7 @@ save "intermediate_files/daysunpaid.dta", replace
 /* Save duration for those taking over 4 weeks */
 // Condition: eligible & took given type of leave & paid by employer & took over 4 weeks
 use "intermediate_files/fmla2.dta", clear
-collapse durationhigh3 if FMLAelig==1 & paid==1 & fourweekshigh==0 [aweight=weight], by(leaveid) fast
+collapse durationhigh3 if FMLAelig==1 & paid==1 & leavebelowdelay==0 [aweight=weight], by(leaveid) fast
 rename durationhigh3 daysover
 drop if leaveid==0
 save "intermediate_files/daysover.dta", replace
@@ -232,7 +233,7 @@ save "intermediate_files/daysover.dta", replace
 /* Merge FMLA results together */
 use "intermediate_files/takeupshares.dta", clear
 merge 1:1 leaveid using "intermediate_files/fracpaid.dta", nogen
-merge 1:1 leaveid using "intermediate_files/fracunder4_paid.dta", nogen
+merge 1:1 leaveid using "intermediate_files/fracunderdelay_paid.dta", nogen
 merge 1:1 leaveid using "intermediate_files/daysunpaid.dta", nogen
 merge 1:1 leaveid using "intermediate_files/daysover.dta", nogen
 // Replace missing duration with zero
@@ -242,7 +243,7 @@ replace daysover = 0 if daysover==.
 
 /* Merge in assumptions */
 gen mergeid = 1
-merge m:1 mergeid using assumptions, nogen
+merge m:1 mergeid using "intermediate_files/param_assum", nogen
 // Clean up assumptions structure
 gen reduce = .
 replace reduce = reduce_ownhealth if leaveid==1
@@ -263,18 +264,21 @@ gen takeuprate = takeupshare * overall_takeup * reduce
 gen expdur_unpaid = takeuprate * (1 - paid) * daysunpaid
 
 // Expected duration for those pushed onto the program
-gen expdur_paid = takeuprate * paid * frac_employerpush * dayspaid
+gen expdur_paid = takeuprate * paid * frac_fullpush * dayspaid
 
 // Expected duration for those on the program after 4 weeks
-gen expdur_over = takeuprate * paid * (1 - frac_employerpush) * (1 - fracunder4) * (daysover - 20)
+if waiting_period <= delay_partialpush {
+  gen daysover2 = daysover - delay_partialpush
+}
+else {
+  gen daysover2 = daysover - waiting_period
+}
+gen expdur_over = takeuprate * paid * frac_partialpush * (1 - fracunderdelay) * daysover2
 
 // Expected duration
 gen expdur = expdur_unpaid + expdur_paid + expdur_over
 
 /* Total up for included leave types */
-keep leaveid mergeid expdur
-merge m:1 mergeid using parameters, nogen
-keep leaveid mergeid expdur include_*
 gen includes = .
 replace includes = include_ownhealth if leaveid==1
 replace includes = include_childhealth if leaveid==2
@@ -284,7 +288,6 @@ replace includes = include_otherrelhealth if leaveid==5
 replace includes = include_military if leaveid==6
 replace includes = include_otherreason if leaveid==7
 replace includes = include_newchild if leaveid==8
-drop include_*
 gen expdur2 = expdur * includes
 collapse (mean) mergeid (sum) expdur2, fast
 rename expdur2 leave_expdur

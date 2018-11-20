@@ -26,7 +26,9 @@ replace reduce_otherrelhealth = 1.0
 replace reduce_military = 1.0
 replace reduce_otherreason = 1.0
 replace reduce_newchild = 1.0
-replace frac_employerpush = 1.0
+replace frac_fullpush = 0.4
+replace frac_partialpush = 0.6
+replace delay_partialpush = 20
 save assumptions, replace
 
 

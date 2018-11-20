@@ -35,7 +35,9 @@ replace reduce_otherrelhealth = 1.0
 replace reduce_military = 1.0
 replace reduce_otherreason = 1.0
 replace reduce_newchild = 1.0
-replace frac_employerpush = 1.0
+replace frac_fullpush = 1.0
+replace frac_partialpush = 0.0
+replace delay_partialpush = 20
 save assumptions, replace
 }
 
@@ -184,11 +186,12 @@ gen mergeid = 1
 save "tests/test_output/test_assum_rednewchild_output.dta", replace
 }
 
-/* Test frac_employerpush */
+/* Test frac_fullpush and frac_partialpush */
 quietly {
 use assumptions, clear
 replace reduce_newchild = 1.0
-replace frac_employerpush = 0.4
+replace frac_fullpush = 0.4
+replace frac_partialpush = 0.6
 save assumptions, replace
 do "run_anyassumptions.do"
 gen pass_emppush_expben = (abs(expectedbenefit - 247.8717) < 0.01)
@@ -197,6 +200,20 @@ gen pass_emppush_payroll = (abs(payrollcost*100 - .45680446) < 0.01)
 drop expectedbenefit totalcost payrollcost
 gen mergeid = 1
 save "tests/test_output/test_assum_emppush_output.dta", replace
+}
+
+/* Test delay_partialpush */
+quietly {
+use assumptions, clear
+replace delay_partialpush = 25
+save assumptions, replace
+do "run_anyassumptions.do"
+gen pass_delay_expben = (abs(expectedbenefit - 237.6747) < 0.01)
+gen pass_delay_total = (abs(totalcost/10^9 - 37.852791) < 0.01)
+gen pass_delay_payroll = (abs(payrollcost*100 - .43801232) < 0.01)
+drop expectedbenefit totalcost payrollcost
+gen mergeid = 1
+save "tests/test_output/test_assum_delay_output.dta", replace
 }
 
 /* Check that all tests pass, or which fail */
@@ -299,6 +316,15 @@ noisily di "Reduced employer push assumption passes"
 else {
 noisily di "Reduced employer push assumption fails"
 noisily sum pass_emppush_expben pass_emppush_total pass_emppush_payroll
+}
+merge 1:1 mergeid using "tests/test_output/test_assum_delay_output.dta", nogen norep
+gen pass_delay = pass_delay_expben * pass_delay_total * pass_delay_payroll
+if pass_delay == 1 {
+noisily di "Employer push delay assumption passes"
+}
+else {
+noisily di "Employer push delay assumption fails"
+noisily sum pass_delay_expben pass_delay_total pass_delay_payroll
 }
 }
 
