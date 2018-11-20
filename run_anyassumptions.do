@@ -4,6 +4,9 @@
 // Check parameter inputs for unallowable values
 use parameters, clear
 assert maxduration_days >= 0
+assert minbenefit <= maxbenefit
+assert benefit_phaseout_thd >= 0
+assert benefit_phaseout_rt >= 0
 assert include_ownhealth==0 | include_ownhealth==1
 assert include_childhealth==0 | include_childhealth==1
 assert include_spousehealth==0 | include_spousehealth==1
@@ -326,21 +329,22 @@ replace leave_expdur = 0 if totalhours < work_requirement
 
 // Calculate benefit
 gen leave_expweeks = leave_expdur / 5
-gen weeklybenefit = min(replacementrate * weeklywage, maxbenefit) if !missing(weeklywage)
+gen benefit_reg = replacementrate * weeklywage if !missing(weeklywage)
+gen benefit_capped = min(benefit_reg, maxbenefit) if !missing(weeklywage)
+gen reduce_ben = max(weeklywage - benefit_phaseout_thd, 0) * benefit_phaseout_rt if !missing(weeklywage)
+gen weeklybenefit = max(benefit_capped - reduce_ben, minbenefit) if !missing(weeklywage)
 
 /* Produce final estimates */
 // Total expected benefit per person
 gen leave_total = leave_expweeks * weeklybenefit
 // Extrapolate to entire employed population for total cost
-egen benefit_total = total(leave_total * marsupwt) if !missing(weeklywage)
 egen employed_total = total(marsupwt) if employed==1
 egen used_total = total(marsupwt) if !missing(weeklywage)
-gen totalcost = benefit_total / used_total * employed_total
-**gen totalcost = leave_total * 151436000
-// Cost as a percent of payroll
-egen wage_total = total(wsal_val * marsupwt) if !missing(leave_total)
-gen payrollcost = benefit_total / wage_total
+gen marsupwt2 = marsupwt * employed_total / used_total
+egen wage_total = total(wsal_val * marsupwt2) if !missing(leave_total)
+egen totalcost = total(leave_total * marsupwt2) if !missing(leave_total)
+gen payrollcost = totalcost / wage_total
 gen expectedbenefit = leave_total if !missing(weeklywage)
 
-collapse expectedbenefit totalcost payrollcost [aweight=marsupwt]
+collapse expectedbenefit totalcost payrollcost [aweight=marsupwt2]
 sum expectedbenefit totalcost payrollcost

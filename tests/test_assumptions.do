@@ -11,6 +11,9 @@ use parameters, clear
 replace maxduration_days = 40
 replace replacementrate = 0.7
 replace maxbenefit = 600
+replace minbenefit = 0
+replace benefit_phaseout_thd = 9e99
+replace benefit_phaseout_rt = 0
 replace waiting_period = 0
 replace work_requirement = 0
 replace include_ownhealth = 1
