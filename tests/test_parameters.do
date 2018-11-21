@@ -12,6 +12,9 @@ use parameters, clear
 replace maxduration_days = 40
 replace replacementrate = 0.7
 replace maxbenefit = 600
+replace minbenefit = 0
+replace benefit_phaseout_thd = 9e99
+replace benefit_phaseout_rt = 0
 replace waiting_period = 0
 replace work_requirement = 0
 replace include_ownhealth = 1
@@ -97,10 +100,42 @@ gen mergeid = 1
 save "tests/test_output/test_params_maxben_output.dta", replace
 }
 
-/* Test waiting_period */
+/* Test minbenefit */
 quietly {
 use parameters, clear
 replace maxbenefit = 600
+replace minbenefit = 300
+save parameters, replace
+quietly do "run_anyassumptions.do"
+gen pass_minben_expben = (abs(expectedbenefit - 332.49939) < 0.01)
+gen pass_minben_total = (abs(totalcost/10^9 - 52.954862) < 0.01)
+gen pass_minben_payroll = (abs(payrollcost*100 - .61276546) < 0.01)
+drop expectedbenefit totalcost payrollcost
+gen mergeid = 1
+save "tests/test_output/test_params_minben_output.dta", replace
+}
+
+/* Test phase-out */
+quietly {
+use parameters, clear
+replace minbenefit = 0
+replace benefit_phaseout_thd = 2000
+replace benefit_phaseout_rt = 0.2
+save parameters, replace
+quietly do "run_anyassumptions.do"
+gen pass_phaseout_expben = (abs(expectedbenefit - 297.36621) < 0.01)
+gen pass_phaseout_total = (abs(totalcost/10^9 - 47.359439) < 0.01)
+gen pass_phaseout_payroll = (abs(payrollcost*100 - .54801819) < 0.01)
+drop expectedbenefit totalcost payrollcost
+gen mergeid = 1
+save "tests/test_output/test_params_phaseout_output.dta", replace
+}
+
+/* Test waiting_period */
+quietly {
+use parameters, clear
+replace benefit_phaseout_thd = 9e99
+replace benefit_phaseout_rt = 0
 replace waiting_period = 5
 save parameters, replace
 quietly do "run_anyassumptions.do"
@@ -284,6 +319,24 @@ noisily di "Maximum benefit parameter passes"
 else {
 noisily di "Maximum benefit parameter fails"
 noisily sum pass_maxben_expben pass_maxben_total pass_maxben_payroll
+}
+merge 1:1 mergeid using "tests/test_output/test_params_minben_output.dta", nogen norep
+gen pass_minben = pass_minben_expben * pass_minben_total * pass_minben_payroll
+if pass_minben == 1 {
+noisily di "Minimum benefit parameter passes"
+}
+else {
+noisily di "Minimum benefit parameter fails"
+noisily sum pass_minben_expben pass_minben_total pass_minben_payroll
+}
+merge 1:1 mergeid using "tests/test_output/test_params_phaseout_output.dta", nogen norep
+gen pass_phaseout = pass_phaseout_expben * pass_phaseout_total * pass_phaseout_payroll
+if pass_phaseout == 1 {
+noisily di "Phase-out parameter(s) passes"
+}
+else {
+noisily di "Phase-out parameter(s) fails"
+noisily sum pass_phaseout_expben pass_phaseout_total pass_phaseout_payroll
 }
 merge 1:1 mergeid using "tests/test_output/test_params_waiting_output.dta", nogen norep
 gen pass_waiting = pass_waiting_expben * pass_waiting_total * pass_waiting_payroll

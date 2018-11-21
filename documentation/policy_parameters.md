@@ -27,6 +27,22 @@
    - Mimumum: parameter value should be nonnegative (recommendation)
  - Note: A negative value should be interpreted as a minimum surtax on lost income.
 
+`minbenefit`
+ - Definition: Minimum weekly benefit amount
+ - Limitations:
+   - Maximum: parameter value should be less than `maxbenefit`
+
+`benefit_phaseout_thd`
+ - Definition: Phase-out threshold for the benefit (in weekly wages)
+ - Limitations:
+   - Minimum: parameter value should be nonnegative
+
+`benefit_phaseout_rt`
+ - Definition: Phase-out rate for the benefit, applied to weekly wages in excess of `benefit_phaseout_thd`
+ - Limitations:
+   - Minimum: parameter value should be nonnegative
+ - Note: A value greater than 1 should be interpreted as losing more than a dollar of benefit for a marginal dollar of weekly income.
+
 ## Eligibility requirements
 `work_requirement`
  - Definition: Minimum total hours worked (annual basis) to be eligible for paid leave benefits
