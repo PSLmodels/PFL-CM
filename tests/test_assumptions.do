@@ -47,12 +47,8 @@ save assumptions, replace
 /* Test base case*/
 quietly {
 do "run_anyassumptions.do"
-gen pass_basecase_expben = (abs(expectedbenefit - 313.13403) < 0.01)
-gen pass_basecase_total = (abs(totalcost/10^9 - 49.870676) < 0.01)
-gen pass_basecase_payroll = (abs(payrollcost*100 - 0.5770769) < 0.01)
-drop expectedbenefit totalcost payrollcost
-gen mergeid = 1
-save "tests/test_output/test_assum_basecase_output.dta", replace
+gen testid = "base_case"
+save "tests/test_output/test_assum_output.dta", replace
 }
 
 /* Test overall_takeup */
@@ -61,12 +57,9 @@ use assumptions, clear
 replace overall_takeup = 0.2
 save assumptions, replace
 do "run_anyassumptions.do"
-gen pass_takeup_expben = (abs(expectedbenefit - 393.8793) < 0.01)
-gen pass_takeup_total = (abs(totalcost/10^9 - 62.730408) < 0.01)
-gen pass_takeup_payroll = (abs(payrollcost*100 - 0.72588287) < 0.01)
-drop expectedbenefit totalcost payrollcost
-gen mergeid = 1
-save "tests/test_output/test_assum_takeup_output.dta", replace
+gen testid = "overall_takeup"
+merge 1:1 testid using "tests/test_output/test_assum_output.dta", nogen
+save "tests/test_output/test_assum_output.dta", replace
 }
 
 /* Test reduce_ownhealth */
@@ -76,12 +69,9 @@ replace overall_takeup = 0.159
 replace reduce_ownhealth = 0.5
 save assumptions, replace
 do "run_anyassumptions.do"
-gen pass_redmedical_expben = (abs(expectedbenefit - 220.1012 ) < 0.01)
-gen pass_redmedical_total = (abs(totalcost/10^9 - 35.053978) < 0.01)
-gen pass_redmedical_payroll = (abs(payrollcost*100 - .40562595) < 0.01)
-drop expectedbenefit totalcost payrollcost
-gen mergeid = 1
-save "tests/test_output/test_assum_redmedical_output.dta", replace
+gen testid = "reduce_ownhealth"
+merge 1:1 testid using "tests/test_output/test_assum_output.dta", nogen
+save "tests/test_output/test_assum_output.dta", replace
 }
 
 /* Test reduce_childhealth */
@@ -91,12 +81,9 @@ replace reduce_ownhealth = 1.0
 replace reduce_childhealth = 0.2
 save assumptions, replace
 do "run_anyassumptions.do"
-gen pass_redchildh_expben = (abs(expectedbenefit - 307.3982  ) < 0.01)
-gen pass_redchildh_total = (abs(totalcost/10^9 - 48.957166) < 0.01)
-gen pass_redchildh_payroll = (abs(payrollcost*100 - .56650625) < 0.01)
-drop expectedbenefit totalcost payrollcost
-gen mergeid = 1
-save "tests/test_output/test_assum_redchildh_output.dta", replace
+gen testid = "reduce_childhealth"
+merge 1:1 testid using "tests/test_output/test_assum_output.dta", nogen
+save "tests/test_output/test_assum_output.dta", replace
 }
 
 /* Test reduce_spousehealth */
@@ -106,12 +93,9 @@ replace reduce_childhealth = 1.0
 replace reduce_spousehealth = 0.2
 save assumptions, replace
 do "run_anyassumptions.do"
-gen pass_redspouse_expben = (abs(expectedbenefit - 301.0782) < 0.01)
-gen pass_redspouse_total = (abs(totalcost/10^9 - 47.950623) < 0.01)
-gen pass_redspouse_payroll = (abs(payrollcost*100 - .55485908) < 0.01)
-drop expectedbenefit totalcost payrollcost
-gen mergeid = 1
-save "tests/test_output/test_assum_redspouse_output.dta", replace
+gen testid = "reduce_spousehealth"
+merge 1:1 testid using "tests/test_output/test_assum_output.dta", nogen
+save "tests/test_output/test_assum_output.dta", replace
 }
 
 /* Test reduce_parenthealth */
@@ -121,12 +105,9 @@ replace reduce_spousehealth = 1.0
 replace reduce_parenthealth = 0.1
 save assumptions, replace
 do "run_anyassumptions.do"
-gen pass_redparent_expben = (abs(expectedbenefit - 298.7396) < 0.01)
-gen pass_redparent_total = (abs(totalcost/10^9 - 47.578178) < 0.01)
-gen pass_redparent_payroll = (abs(payrollcost*100 - .55054934) < 0.01)
-drop expectedbenefit totalcost payrollcost
-gen mergeid = 1
-save "tests/test_output/test_assum_redparent_output.dta", replace
+gen testid = "reduce_parenthealth"
+merge 1:1 testid using "tests/test_output/test_assum_output.dta", nogen
+save "tests/test_output/test_assum_output.dta", replace
 }
 
 /* Test reduce_otherrelhealth */
@@ -136,12 +117,9 @@ replace reduce_parenthealth = 1.0
 replace reduce_otherrelhealth = 0.1
 save assumptions, replace
 do "run_anyassumptions.do"
-gen pass_redotherrel_expben = (abs(expectedbenefit - 309.5474) < 0.01)
-gen pass_redotherrel_total = (abs(totalcost/10^9 - 49.29946) < 0.01)
-gen pass_redotherrel_payroll = (abs(payrollcost*100 - .57046711) < 0.01)
-drop expectedbenefit totalcost payrollcost
-gen mergeid = 1
-save "tests/test_output/test_assum_redotherrel_output.dta", replace
+gen testid = "reduce_otherrelhealth"
+merge 1:1 testid using "tests/test_output/test_assum_output.dta", nogen
+save "tests/test_output/test_assum_output.dta", replace
 }
 
 /* Test reduce_military */
@@ -151,12 +129,9 @@ replace reduce_otherrelhealth = 1.0
 replace reduce_military = 0.9
 save assumptions, replace
 do "run_anyassumptions.do"
-gen pass_redmilitary_expben = (abs(expectedbenefit - 312.691) < 0.01)
-gen pass_redmilitary_total = (abs(totalcost/10^9 - 49.80011) < 0.01)
-gen pass_redmilitary_payroll = (abs(payrollcost*100 - .57626031) < 0.01)
-drop expectedbenefit totalcost payrollcost
-gen mergeid = 1
-save "tests/test_output/test_assum_redmilitary_output.dta", replace
+gen testid = "reduce_military"
+merge 1:1 testid using "tests/test_output/test_assum_output.dta", nogen
+save "tests/test_output/test_assum_output.dta", replace
 }
 
 /* Test reduce_otherreason */
@@ -166,12 +141,9 @@ replace reduce_military = 1.0
 replace reduce_otherreason = 0.0
 save assumptions, replace
 do "run_anyassumptions.do"
-gen pass_redother_expben = (abs(expectedbenefit - 312.1819) < 0.01)
-gen pass_redother_total = (abs(totalcost/10^9 - 49.719038) < 0.01)
-gen pass_redother_payroll = (abs(payrollcost*100 - .57532224) < 0.01)
-drop expectedbenefit totalcost payrollcost
-gen mergeid = 1
-save "tests/test_output/test_assum_redother_output.dta", replace
+gen testid = "reduce_otherreason"
+merge 1:1 testid using "tests/test_output/test_assum_output.dta", nogen
+save "tests/test_output/test_assum_output.dta", replace
 }
 
 /* Test reduce_newchild */
@@ -181,12 +153,9 @@ replace reduce_otherreason = 1.0
 replace reduce_newchild = 0.9
 save assumptions, replace
 do "run_anyassumptions.do"
-gen pass_rednewchild_expben = (abs(expectedbenefit - 305.1873) < 0.01)
-gen pass_rednewchild_total = (abs(totalcost/10^9 - 48.605061) < 0.01)
-gen pass_rednewchild_payroll = (abs(payrollcost*100 - .5624319) < 0.01)
-drop expectedbenefit totalcost payrollcost
-gen mergeid = 1
-save "tests/test_output/test_assum_rednewchild_output.dta", replace
+gen testid = "reduce_newchild"
+merge 1:1 testid using "tests/test_output/test_assum_output.dta", nogen
+save "tests/test_output/test_assum_output.dta", replace
 }
 
 /* Test frac_fullpush and frac_partialpush */
@@ -197,12 +166,9 @@ replace frac_fullpush = 0.4
 replace frac_partialpush = 0.6
 save assumptions, replace
 do "run_anyassumptions.do"
-gen pass_emppush_expben = (abs(expectedbenefit - 247.8717) < 0.01)
-gen pass_emppush_total = (abs(totalcost/10^9 - 39.476793) < 0.01)
-gen pass_emppush_payroll = (abs(payrollcost*100 - .45680446) < 0.01)
-drop expectedbenefit totalcost payrollcost
-gen mergeid = 1
-save "tests/test_output/test_assum_emppush_output.dta", replace
+gen testid = "push"
+merge 1:1 testid using "tests/test_output/test_assum_output.dta", nogen
+save "tests/test_output/test_assum_output.dta", replace
 }
 
 /* Test delay_partialpush */
@@ -211,123 +177,35 @@ use assumptions, clear
 replace delay_partialpush = 25
 save assumptions, replace
 do "run_anyassumptions.do"
-gen pass_delay_expben = (abs(expectedbenefit - 237.6747) < 0.01)
-gen pass_delay_total = (abs(totalcost/10^9 - 37.852791) < 0.01)
-gen pass_delay_payroll = (abs(payrollcost*100 - .43801232) < 0.01)
+gen testid = "delay_partialpush"
+merge 1:1 testid using "tests/test_output/test_assum_output.dta", nogen
+save "tests/test_output/test_assum_output.dta", replace
+}
+
+/* ONLY USE TO OVERWRITE RESULTS
+// Export results to CSV file
+use "tests/test_output/test_assum_output.dta", clear
+gen expectedbenefit_res = round(expectedbenefit, 0.01)
+gen totalcost_res = round(totalcost / 10^9, 0.01)
+gen payrollcost_res = round(payrollcost * 100, 0.01)
 drop expectedbenefit totalcost payrollcost
-gen mergeid = 1
-save "tests/test_output/test_assum_delay_output.dta", replace
-}
+export delimited expectedbenefit_res totalcost_res payrollcost_res testid using "tests/test_output/testresults_assumptions.csv", replace
+di "Test assumptions results saved"
+*/
 
-/* Check that all tests pass, or which fail */
-quietly{
-use "tests/test_output/test_assum_basecase_output.dta", clear
-gen pass_basecase = pass_basecase_expben * pass_basecase_total * pass_basecase_payroll
-if pass_basecase==1 {
-noisily di "Base case passes"
+/* Check that all tests pass or which fail */
+quietly {
+import delimited "tests/test_output/testresults_assumptions.csv", clear
+merge 1:1 testid using "tests/test_output/test_assum_output.dta"
+replace expectedbenefit = round(expectedbenefit, 0.01)
+replace totalcost = round(totalcost / 10^9, 0.01)
+replace payrollcost = round(payrollcost * 100, 0.01)
+gen pass_expben = (expectedbenefit==expectedbenefit_res)
+gen pass_total = (totalcost==totalcost_res)
+gen pass_payroll = (payrollcost==payrollcost_res)
+gen pass_test = pass_expben * pass_total * pass_payroll
+gen test_message = ""
+replace test_message = testid + ": " + "PASS" if pass_test==1
+replace test_message = testid + ": " + "FAIL" if pass_test==0
+noisily list test_message
 }
-else {
-noisily di "Base case fails"
-noisily sum pass_basecase_expben pass_basecase_total pass_basecase_payroll
-}
-merge 1:1 mergeid using "tests/test_output/test_assum_takeup_output.dta", nogen norep
-gen pass_takeup = pass_takeup_expben * pass_takeup_total * pass_takeup_payroll
-if pass_takeup == 1 {
-noisily di "Overall take-up assumption passes"
-}
-else {
-noisily di "Overall take-up assumption fails"
-noisily sum pass_takeup_expben pass_takeup_total pass_takeup_payroll
-}
-merge 1:1 mergeid using "tests/test_output/test_assum_redmedical_output.dta", nogen norep
-gen pass_redmedical = pass_redmedical_expben * pass_redmedical_total * pass_redmedical_payroll
-if pass_redmedical == 1 {
-noisily di "Reduce take-up for ownhealth assumption passes"
-}
-else {
-noisily di "Reduce take-up for ownhealth assumption fails"
-noisily sum pass_redmedical_expben pass_redmedical_total pass_redmedical_payroll
-}
-merge 1:1 mergeid using "tests/test_output/test_assum_redchildh_output.dta", nogen norep
-gen pass_redchildh = pass_redchildh_expben * pass_redchildh_total * pass_redchildh_payroll
-if pass_redchildh == 1 {
-noisily di "Reduce take-up for child health assumption passes"
-}
-else {
-noisily di "Reduce take-up for child health assumption fails"
-noisily sum pass_redchildh_expben pass_redchildh_total pass_redchildh_payroll
-}
-merge 1:1 mergeid using "tests/test_output/test_assum_redspouse_output.dta", nogen norep
-gen pass_redspouse = pass_redspouse_expben * pass_redspouse_total * pass_redspouse_payroll
-if pass_redspouse == 1 {
-noisily di "Reduce take-up for spouse health assumption passes"
-}
-else {
-noisily di "Reduce take-up for spouse health assumption fails"
-noisily sum pass_redspouse_expben pass_redspouse_total pass_redspouse_payroll
-}
-merge 1:1 mergeid using "tests/test_output/test_assum_redparent_output.dta", nogen norep
-gen pass_redparent = pass_redparent_expben * pass_redparent_total * pass_redparent_payroll
-if pass_redparent == 1 {
-noisily di "Reduce take-up for parent health assumption passes"
-}
-else {
-noisily di "Reduce take-up for parent health assumption fails"
-noisily sum pass_redparent_expben pass_redparent_total pass_redparent_payroll
-}
-merge 1:1 mergeid using "tests/test_output/test_assum_redotherrel_output.dta", nogen norep
-gen pass_redotherrel = pass_redotherrel_expben * pass_redotherrel_total * pass_redotherrel_payroll
-if pass_redotherrel == 1 {
-noisily di "Reduce take-up for other relative health assumption passes"
-}
-else {
-noisily di "Reduce take-up for other relative health assumption fails"
-noisily sum pass_redotherrel_expben pass_redotherrel_total pass_redotherrel_payroll
-}
-merge 1:1 mergeid using "tests/test_output/test_assum_redmilitary_output.dta", nogen norep
-gen pass_redmilitary = pass_redmilitary_expben * pass_redmilitary_total * pass_redmilitary_payroll
-if pass_redmilitary == 1 {
-noisily di "Reduce take-up for military assumption passes"
-}
-else {
-noisily di "Reduce take-up for military assumption fails"
-noisily sum pass_redmilitary_expben pass_redmilitary_total pass_redmilitary_payroll
-}
-merge 1:1 mergeid using "tests/test_output/test_assum_redother_output.dta", nogen norep
-gen pass_redother = pass_redother_expben * pass_redother_total * pass_redother_payroll
-if pass_redother == 1 {
-noisily di "Reduce take-up for other reason assumption passes"
-}
-else {
-noisily di "Reduce take-up for other reason assumption fails"
-noisily sum pass_redother_expben pass_redother_total pass_redother_payroll
-}
-merge 1:1 mergeid using "tests/test_output/test_assum_rednewchild_output.dta", nogen norep
-gen pass_rednewchild = pass_rednewchild_expben * pass_rednewchild_total * pass_rednewchild_payroll
-if pass_rednewchild == 1 {
-noisily di "Reduce take-up for new child assumption passes"
-}
-else {
-noisily di "Reduce take-up for new child assumption fails"
-noisily sum pass_rednewchild_expben pass_rednewchild_total pass_rednewchild_payroll
-}
-merge 1:1 mergeid using "tests/test_output/test_assum_emppush_output.dta", nogen norep
-gen pass_emppush = pass_emppush_expben * pass_emppush_total * pass_emppush_payroll
-if pass_emppush == 1 {
-noisily di "Reduced employer push assumption passes"
-}
-else {
-noisily di "Reduced employer push assumption fails"
-noisily sum pass_emppush_expben pass_emppush_total pass_emppush_payroll
-}
-merge 1:1 mergeid using "tests/test_output/test_assum_delay_output.dta", nogen norep
-gen pass_delay = pass_delay_expben * pass_delay_total * pass_delay_payroll
-if pass_delay == 1 {
-noisily di "Employer push delay assumption passes"
-}
-else {
-noisily di "Employer push delay assumption fails"
-noisily sum pass_delay_expben pass_delay_total pass_delay_payroll
-}
-}
-

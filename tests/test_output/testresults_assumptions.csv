@@ -1,0 +1,13 @@
+expectedbenefit_res,totalcost_res,payrollcost_res,testid
+237.67,37.849998,.44,delay_partialpush
+313.13,49.869999,.57999998,base_case
+393.88,62.73,.73000002,overall_takeup
+247.87,39.48,.46000001,push
+307.39999,48.959999,.56999999,reduce_childhealth
+312.69,49.799999,.57999998,reduce_military
+305.19,48.610001,.56,reduce_newchild
+312.17999,49.720001,.57999998,reduce_otherreason
+309.54999,49.299999,.56999999,reduce_otherrelhealth
+220.10001,35.049999,.41,reduce_ownhealth
+298.73999,47.580002,.55000001,reduce_parenthealth
+301.07999,47.950001,.55000001,reduce_spousehealth
