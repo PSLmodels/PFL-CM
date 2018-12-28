@@ -1,2 +1,4 @@
 *
 !.gitignore
+!testresults_assumptions.csv
+!testresults_parameters.csv

@@ -1,0 +1,17 @@
+expectedbenefit_res,totalcost_res,payrollcost_res,testid
+233.67,37.209999,.43000001,include_newchild
+313.13,49.869999,.57999998,base_case
+305.95999,48.73,.56,include_childhealth
+308.70001,49.169998,.56999999,include_military
+312.17999,49.720001,.57999998,include_otherreason
+309.14999,49.240002,.56999999,include_otherrelhealth
+127.07,20.24,.23,include_ownhealth
+297.14001,47.32,.55000001,include_parenthealth
+298.06,47.470001,.55000001,include_spousehealth
+399.60001,63.639999,.74000001,maxbenefit
+411.76999,65.580002,.75999999,maxduration_days
+332.5,52.950001,.61000001,minbenefit
+297.37,47.360001,.55000001,phase_out
+341.87,54.450001,.63,replacementrate
+264.39001,42.110001,.49000001,waiting_period
+297.45001,47.369999,.55000001,work_requirement
